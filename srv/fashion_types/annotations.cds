@@ -1,20 +1,6 @@
-using { FasionShopService } from '../fashionShop_srv';
+using {FasionShop_Service } from '../fashionShop_srv';
 
-annotate FasionShopService.Types with {
-        id                  @title : 'ID';
-        //section             @title  : 'Section ID';
-        typename            @title : 'Type';
-        description         @title : 'Description';
-
-        //section es un atributo que apunta a otra entidad
-        /*section @Common : {
-        Text : section,
-        TextArrangement : #TextOnly,
-    }*/
-};
-
-
-annotate FasionShopService.Types with @(
+annotate FasionShop_Service.Fashion_Types with @(
     //Para ocultar el filtro Search
     Capabilities.SearchRestrictions: {
         $Type : 'Capabilities.SearchRestrictionsType',

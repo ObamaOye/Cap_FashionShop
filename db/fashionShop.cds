@@ -7,75 +7,75 @@ using {Currency} from '@sap/cds/common';
 type Flag : String(1);
 
 entity Sections {
-    key id          : UUID;
-        name        : String(16);
-        description : String(100);
+    key id          : UUID @(title: 'Section ID');
+        name        : String(16) @(title: 'Section Name');
+        description : String(100) @(title: 'Section Description');
 }
 
-entity F_Types {
-    key id          : UUID;
-        section     : Association to Sections;
-        typename    : String(16);
-        description : String(100);
+entity Fashion_Types {
+    key id          : UUID @(title: 'Type ID');
+        section     : Association to Sections  @(title: 'Section ID');
+        typename    : String(16) @(title: 'Type Name');
+        description : String(100) @(title: 'Type Description');
 }
 
 
-entity F_Items {
-    key id          : UUID;
-        f_type      : Association to F_Types;
-        itemname    : String(16);
-        brand       : String(16);
-        size        : String(10);
-        material    : String(16);
-        price       : String(10);
-        currency    : Currency;
-        isAvailable : Flag;
+entity Fashion_Items {
+    key id              : UUID @(title: 'Item ID');
+        fashionType     : Association to Fashion_Types @(title: 'Type ID');
+        itemname        : String(16) @(title: 'Item Name');
+        brand           : String(16) @(title: 'Brand');
+        size            : String(10) @(title: 'Size');
+        material        : String(16) @(title: 'Material'); 
+        price           : String(10) @(title: 'Price');
+        currency        : Currency @(title: 'Currency');
+        isAvailable     : Flag @(title : 'Is Available?'); //Flas is a Type created by me.
 }
 
-view V_FashionShop as
-    select from F_Items as Item {
-        Item.f_type.section.id          as sectionId,
-        Item.f_type.section.name        as sectionName,
-        Item.f_type.section.description as sectionDesc,
-        Item.f_type.id                  as fashionTypeId,
-        Item.f_type.typename            as fashionTypeName,
-        Item.f_type.description         as fashionTypeDesc,
-        Item.id                         as fashionItemName,
-        Item.brand                      as brand,
-        Item.size                       as size,
-        Item.material                   as material,
-        Item.price                      as price,
-        Item.currency                   as currency,
+//View creatin for Fashion Shop
+view YC_FashionShop as
+    select from Fashion_Items as fItem {
+        fItem.fashionType.section.id          as sectionId,
+        fItem.fashionType.section.name        as sectionName,
+        fItem.fashionType.section.description as sectionDesc,
+        fItem.fashionType.id                  as fashionTypeId,
+        fItem.fashionType.typename            as fashionTypeName,
+        fItem.fashionType.description         as fashionTypeDesc,
+       
+        fItem.id                         as fashionItemName,
+        fItem.brand                      as brand,
+        fItem.size                       as size,
+        fItem.material                   as material,
+        fItem.price                      as price,
+        fItem.currency                   as currency,
         //Item.isAvailable as isAvailable,
 
         concat(
-            Item.brand, concat(
-                ' ', Item.itemname
+            fItem.brand, concat(
+                ' ', fItem.itemname
             )
-        )                               as ItemDetails : String(32),
+        )   as ItemDetails : String(32),
 
         case
             when
-                Item.price >= 500
+                fItem.price >= 500
             then
                 'Premium'
             when
-                Item.price     >= 100
-                and Item.price <  500
+                fItem.price     >= 100
+                and fItem.price <  500
             then
                 'Mid-Range'
             else
                 'Low-Range'
-        end                             as priceRange  : String(10)
+        end as priceRange  : String(10)
 
 
-    }
-    where
-        Item.isAvailable = 'X';
+    } where fItem.isAvailable = 'X';
 
-view V_FashionType as
-    select from F_Types as fType {
-        fType.id  as fashiontypeId,
+ view YC_FashionType as
+    select from Fashion_Types as fType {
+        fType.id  as fashionTypeId,
         fType.typename as fashionTypeName,
         fType.section.name as sectionName,
         fType.description as fashionTypeDesc
